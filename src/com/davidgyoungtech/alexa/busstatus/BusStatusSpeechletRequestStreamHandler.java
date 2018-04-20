@@ -1,4 +1,4 @@
-package com.davidgyoung.alexa.busstatus;
+package com.davidgyoungtech.alexa.busstatus;
 
 import java.util.HashSet;
 import java.util.Set;

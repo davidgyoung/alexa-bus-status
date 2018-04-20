@@ -1,4 +1,4 @@
-package com.davidgyoung.alexa.busstatus;
+package com.davidgyoungtech.alexa.busstatus;
 
 
 import org.slf4j.Logger;
@@ -11,6 +11,8 @@ import com.amazon.speech.speechlet.SessionEndedRequest;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletV2;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.amazon.speech.ui.Reprompt;
+import com.amazon.speech.ui.SimpleCard;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 
@@ -27,11 +29,7 @@ public class BusStatusSpeechlet implements SpeechletV2 {
     public SpeechletResponse onLaunch(SpeechletRequestEnvelope<LaunchRequest> requestEnvelope) {
         log.info("onLaunch requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
                 requestEnvelope.getSession().getSessionId());
-
-        PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-        speech.setText("Welcome to the bus status skill.");
-
-        return SpeechletResponse.newAskResponse(speech, null, null);                
+        return getTallResponse("Welcome to the bus status skill.");         
     }
 
     @Override
@@ -43,10 +41,7 @@ public class BusStatusSpeechlet implements SpeechletV2 {
         
         Intent intent = request.getIntent();
         if ("BusStatusIntent".equals(intent.getName())) {
-            PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-            speech.setText("You have triggered the bus status intent.  I have no answer for you yet.");
-
-            return SpeechletResponse.newAskResponse(speech, null, null);                        	
+            return getAskResponse("You have triggered the bus status intent.  I have no answer for you yet.");
         }
         else {
             throw new IllegalArgumentException("Unrecognized intent: " + intent.getName());
@@ -58,4 +53,28 @@ public class BusStatusSpeechlet implements SpeechletV2 {
         log.info("onSessionEnded requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
                 requestEnvelope.getSession().getSessionId());
     }    
+    
+    private SpeechletResponse getAskResponse(String message) {
+        PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+        speech.setText(message);
+        SimpleCard card = new SimpleCard();
+        card.setTitle("David's Bus Status");
+        card.setContent(message);
+
+        PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+        repromptSpeech.setText("Sorry, I didn't get that.");
+        Reprompt reprompt = new Reprompt();
+        reprompt.setOutputSpeech(repromptSpeech);
+        return SpeechletResponse.newAskResponse(speech, reprompt, card);      	
+    }
+    private SpeechletResponse getTallResponse(String message) {
+        PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+        speech.setText(message);
+        SimpleCard card = new SimpleCard();
+        card.setTitle("David's Bus Statuss");
+        card.setContent(message);
+        return SpeechletResponse.newTellResponse(speech, card);
+    }
+
+
 }
